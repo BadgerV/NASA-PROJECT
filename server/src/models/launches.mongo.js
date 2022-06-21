@@ -7,7 +7,7 @@ const launchesSchema = mongoose.Schema({
     },
     launchDate: {
         type : Date,
-        required: trmongoose.usted,
+        required: true,
     },
     mission : {
         type : String,

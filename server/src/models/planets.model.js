@@ -5,7 +5,6 @@ const fs = require('fs');
 
 const planets = require('./planets.mongo');
 
-const habitablePlanets = [];
 
 function isHabitablePlanet(planet) {
   return planet['koi_disposition'] === 'CONFIRMED'
@@ -38,15 +37,18 @@ return new Promise((resolve, reject) => {fs.createReadStream(path.join(__dirname
 }
 
 async function getAllPlanets() {
-  return await planets.find({})
+  return await planets.find({}, {
+    '__v' : 0,
+    '__id' : 0
+  })
 }
 
 async function savePlanet(planet) {
   try {
     await planets.updateOne({
-      keplerName: data.kepler_name,
+      keplerName: planet.kepler_name,
     }, {
-      keplername: data.kepler_name
+      keplerName: planet.kepler_name
     }, {
       upsert : true
     });
