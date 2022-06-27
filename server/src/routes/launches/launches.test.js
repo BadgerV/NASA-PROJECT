@@ -1,11 +1,22 @@
 const request = require('supertest');
 const app = require('../../app');
+const {mongoConnect, mongoDisconnect} = require('../../services/mongo');
 
 
+describe('Launches API', ()=> {
+
+    beforeAll(async() => {
+        await mongoConnect()
+    });
+
+    afterAll(async() => {
+        await mongoDisconnect()
+    })
+    
 describe('TEST GET /launches', () => {
     test('It should respond with 200 success', async () => {
         const response = await request(app)
-        .get('/launches')
+        .get('/v1/launches')
         .expect('Content-Type', /json/)
         .expect(200)
     })
@@ -15,26 +26,26 @@ describe('Test POST /launch', () => {
     const completeLaunchData = {
         mission : 'USSR enterprice',
         rocket: 'NCC 107-D',
-        target: 'Kepler-106f',
+        target: 'Kepler-62 f',
         launchDate: 'January 4, 2028'
     }
 
     const launchDataWithoutDate = {        
         mission : 'USSR enterprice',
         rocket: 'NCC 107-D',
-        target: 'Kepler-106f'
+        target: 'Kepler-62 f'
     }
 
     const launchDataWithInvalidDate = {
         mission : 'USSR enterprice',
         rocket: 'NCC 107-D',
-        target: 'Kepler-106f',
+        target: 'Kepler-62 f',
         launchDate: 'zoot'
     }
 
     test('It shouild respond with 201 created', async () => {
         const response = await request(app)
-        .post('/launches')
+        .post('/v1/launches')
         .send(completeLaunchData)
         .expect('Content-Type', /json/)
         .expect(201);
@@ -48,7 +59,7 @@ describe('Test POST /launch', () => {
 
     test('It should catch mssing reuired proprties', async () => {
         const response = await request(app)
-        .post('/launches')
+        .post('/v1/launches')
         .send(launchDataWithoutDate)
         .expect('Content-Type', /json/)
         .expect(400);
@@ -62,7 +73,7 @@ describe('Test POST /launch', () => {
 
     test('It sould also catch invalid dates', async() =>  {
         const response = await request(app)
-        .post('/launches')
+        .post('/v1/launches')
         .send(launchDataWithInvalidDate)
         .expect('Content-Type', /json/)
         .expect(400);
@@ -74,3 +85,5 @@ describe('Test POST /launch', () => {
     })
 
 }) 
+})
+

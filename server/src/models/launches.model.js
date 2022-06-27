@@ -6,7 +6,6 @@ const DEFAULT_FLIGHT_NUMBER = 100;
 
 const launches = new Map();
 
-let latestFlightNumber = 100;
 
 const launch = {
     flightNumber: 100,
@@ -23,7 +22,9 @@ saveLaunch(launch)
 
 
 async function existLaunchWithId(launchId) {
-    return await launches.has(launchId)
+    return await launchesDatabase.findOne({
+        flightNumber:launchId
+    })
 }
 
 async function getLatestFlightNumber() {
@@ -37,8 +38,8 @@ async function getLatestFlightNumber() {
         return latestLaunch.flightNumber;
 }
 
-function getAllLaunches () {
-    return launchesDatabase.find({}, {
+async function getAllLaunches () {
+    return await launchesDatabase.find({}, {
         '_id' : 0, '__v' : 0
     })
 }
@@ -72,11 +73,17 @@ async function scheduleNewLaunch(launch) {
     await saveLaunch(newLaunch)
 
 }
-function abortLaunchById(launchId) {
-    const aborted = launches.get(launchId);
-    aborted.upcoming = false;
-    aborted.success = false;
-    return aborted;
+async function abortLaunchById(launchId) {
+    const aborted = await launchesDatabase.updateOne({
+        flightNumber : launchId
+    }, {
+        upcoming : false,
+        success : false
+    });
+
+    return aborted.ok === 1 && aborted.nModified === 1;
+
+    
 }
 
 module.exports = {
