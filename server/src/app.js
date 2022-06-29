@@ -3,7 +3,7 @@ const cors = require('cors');
 const path = require('path');
 const morgan = require('morgan');
 
-const api = require('/routes/api')
+const api = require('./routes/api')
 
 const app = express();
 
